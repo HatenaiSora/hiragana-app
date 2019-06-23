@@ -1,0 +1,106 @@
+body {
+  font-family: 'Roboto', Helvetica, sans-serif;
+}
+
+.background {
+  background-image: url('./japanese\ sun.jpg');
+  background-size: cover;
+  width: 100%;
+  height: 200px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  background-color: #29b6f6;
+  padding-top: 10px;
+  text-align: center;
+  display: felx;
+  flex-direction: column;
+  align-items: center;
+  h2 {
+    color: white;
+    font-size: 30px;
+    margin-bottom: 15px;
+    margin-top: 10px;
+  }
+}
+
+.hiragana-welcome {
+  background-color: white;
+  padding: 30px;
+  text-align: center;
+  display: felx;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 10px;
+  margin: 30px;
+
+  table,
+  th,
+  td {
+    border: 1px solid grey;
+  }
+  table {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    th {
+      background-color: #f50057;
+      color: white;
+    }
+    td {
+      font-weight: 900;
+    }
+  }
+  .learn-btn {
+    padding: 10px 20px 10px 20px;
+    margin: 0 auto;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #29b6f6;
+  height: 100vh;
+  h1 {
+    font-size: 16px;
+    color: white;
+    margin-top: 20px;
+    margin-bottom: 0;
+  }
+  h2 {
+    background-color: white;
+    font-size: 100px;
+    border-radius: 10px;
+    padding: 90px;
+    margin-top: 30px;
+  }
+}
+.multi-answer {
+  text-align: center;
+  h1 {
+    font-size: 20px;
+  }
+  h2 {
+    margin-bottom: 20px;
+  }
+  span {
+    font-weight: 700;
+  }
+  .answers {
+    display: flex;
+    flex-wrap: wrap;
+    width: 300px;
+    justify-content: space-between;
+  }
+}
