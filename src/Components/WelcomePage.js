@@ -18,60 +18,6 @@ class WelcomePage extends Component {
     currentUser: this.props.currentUser,
     currKnownChars: false
   };
-  handleReview = e => {
-    e.preventDefault();
-    this.props.review();
-  };
-  handleLearn = e => {
-    e.preventDefault();
-    this.props.learn();
-  };
-  writeUserData(userId, email, unseenChars, knownChars, seenChars) {
-    firebase
-      .database()
-      .ref('userData/' + userId)
-      .set({
-        email: email,
-        unseenChars: unseenChars,
-        unknownChars: [],
-        knownChars: knownChars,
-        seenChars: seenChars
-      });
-  }
-  chceckKnown(hiraganaIndex) {
-    let result = [];
-    let element;
-    const knownStyle = {
-      backgroundColor: '#66bb6a'
-    };
-    if (this.state.hiragana[hiraganaIndex] && this.state.currKnownChars) {
-      this.state.hiragana[hiraganaIndex].map(e => {
-        for (let i = 0; i < this.state.currKnownChars.length; i++) {
-          if (this.state.currKnownChars[i].order === e.order) {
-            element = (
-              <td style={knownStyle} key={e.order}>
-                {e.jp}
-              </td>
-            );
-            return result.push(element);
-          } else {
-            element = <td key={e.order}>{e.jp}</td>;
-          }
-        }
-        return result.push(element);
-      });
-      return result;
-    } else if (
-      this.state.hiragana[hiraganaIndex] &&
-      this.state.currKnownChars == null
-    ) {
-      this.state.hiragana[hiraganaIndex].map(e => {
-        element = <td key={e.order}>{e.jp}</td>;
-        return result.push(element);
-      });
-    }
-    return result;
-  }
   componentDidMount() {
     db.collection('hiragana2')
       .get()
@@ -125,19 +71,72 @@ class WelcomePage extends Component {
                 currKnownChars: null
               });
               let knownChars = [];
-              let seenChars = [];
               this.writeUserData(
                 this.state.currentUser.uid,
                 this.state.currentUser.email,
                 [...this.state.hiragana],
-                knownChars,
-                seenChars
+                0,
+                knownChars
               );
             }
           });
         }
       });
   }
+  handleReview = e => {
+    e.preventDefault();
+    this.props.review();
+  };
+  handleLearn = e => {
+    e.preventDefault();
+    this.props.learn();
+  };
+  writeUserData(userId, email, unseenChars, userProgress, knownChars) {
+    firebase
+      .database()
+      .ref('userData/' + userId)
+      .set({
+        email: email,
+        unseenChars: unseenChars,
+        userProgress: userProgress,
+        knownChars: knownChars
+      });
+  }
+  chceckKnown(hiraganaIndex) {
+    let result = [];
+    let element;
+    const knownStyle = {
+      backgroundColor: '#66bb6a'
+    };
+    if (this.state.hiragana[hiraganaIndex] && this.state.currKnownChars) {
+      this.state.hiragana[hiraganaIndex].map(e => {
+        for (let i = 0; i < this.state.currKnownChars.length; i++) {
+          if (this.state.currKnownChars[i].order === e.order) {
+            element = (
+              <td style={knownStyle} key={e.order}>
+                {e.jp}
+              </td>
+            );
+            return result.push(element);
+          } else {
+            element = <td key={e.order}>{e.jp}</td>;
+          }
+        }
+        return result.push(element);
+      });
+      return result;
+    } else if (
+      this.state.hiragana[hiraganaIndex] &&
+      this.state.currKnownChars == null
+    ) {
+      this.state.hiragana[hiraganaIndex].map(e => {
+        element = <td key={e.order}>{e.jp}</td>;
+        return result.push(element);
+      });
+    }
+    return result;
+  }
+
   render() {
     const { classes } = this.props;
 
