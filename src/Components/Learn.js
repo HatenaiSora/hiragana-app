@@ -27,7 +27,8 @@ class Learn extends Component {
     reviewProgress: 0,
     showNextButton: false,
     correctAnswer: '',
-    currentChar: ''
+    currentChar: '',
+    answers: []
   };
   componentDidMount() {
     firebase
@@ -69,10 +70,6 @@ class Learn extends Component {
           });
         }
       });
-  }
-
-  componentWillUnmount() {
-    console.log('123');
   }
   handleOneAnswer = e => {
     let { userProgress, unseenChars, counter } = this.state;
@@ -124,7 +121,8 @@ class Learn extends Component {
     let newCounter = this.state.counter + 1;
     this.setState({
       showNextButton: false,
-      counter: newCounter
+      counter: newCounter,
+      answers: []
     });
   };
   handleGoBack = e => {
@@ -151,8 +149,8 @@ class Learn extends Component {
 
   generateAnswers = (max, character) => {
     // max będzie przyjmować userProgress, a character obiekt wyświetlanej hiragany
-    // nie powinny się generować jeszcze raz po kliknęciu w dobrą odpowiedź
     let answers = [0, 0, 0, 0];
+
     let randomIndex = Math.floor(Math.random() * answers.length);
     answers.splice(randomIndex, 1, character.pl);
     let randomAnswer;
@@ -169,16 +167,21 @@ class Learn extends Component {
         }
       }
     }
+
     return answers;
   };
 
   checkReviewProgess = () => {
     const { classes } = this.props;
-    let { userProgress, unseenChars, counter, reviewProgress } = this.state;
-    if (
-      reviewProgress > userProgress &&
-      userProgress < unseenChars.length - 1
-    ) {
+    let {
+      userProgress,
+      unseenChars,
+      counter,
+      reviewProgress,
+      showNextButton
+    } = this.state;
+
+    if (reviewProgress > userProgress && userProgress < unseenChars.length) {
       let newProgress = this.state.userProgress + 1;
       firebase
         .database()
@@ -208,8 +211,25 @@ class Learn extends Component {
       counter < unseenChars[reviewProgress].length
     ) {
       // te z tablicy known mogłyby się nie pokazywać
+      let answers;
+      if (
+        unseenChars &&
+        showNextButton === false &&
+        this.state.answers.length === 0
+      ) {
+        answers = this.generateAnswers(
+          userProgress,
+          unseenChars[reviewProgress][counter]
+        );
+        this.setState({
+          answers: answers
+        });
+      }
       return (
         <>
+          <div className='close' onClick={this.handleGoBack}>
+            <i className='material-icons md-36'>clear</i>
+          </div>
           <h1>Wybierz poprawną odpowiedź</h1>
           <h2>{unseenChars[reviewProgress][counter].jp}</h2>
           {this.state.showNextButton && (
@@ -220,23 +240,19 @@ class Learn extends Component {
             </span>
           )}
           <div className='answers'>
-            {unseenChars &&
-              this.generateAnswers(
-                userProgress,
-                unseenChars[reviewProgress][counter]
-              ).map((e, index) => {
-                return (
-                  <Button
-                    variant='contained'
-                    color='secondary'
-                    className={classes.multiButton}
-                    onClick={this.handleMultiAnswers}
-                    key={index}
-                  >
-                    {e}
-                  </Button>
-                );
-              })}
+            {this.state.answers.map((e, index) => {
+              return (
+                <Button
+                  variant='contained'
+                  color='secondary'
+                  className={classes.multiButton}
+                  onClick={this.handleMultiAnswers}
+                  key={index}
+                >
+                  {e}
+                </Button>
+              );
+            })}
           </div>
         </>
       );
@@ -250,7 +266,50 @@ class Learn extends Component {
   };
   render() {
     const { classes } = this.props;
-    let { userProgress, unseenChars, counter, review } = this.state;
+    let { userProgress, unseenChars, counter, review, knownChars } = this.state;
+
+    if (
+      knownChars.length !== 0 &&
+      userProgress >= 11 &&
+      knownChars.length === 46
+    ) {
+      return (
+        <>
+          <div className='card'>
+            <h1>Znasz już całą hiraganę!</h1>
+            <Button
+              variant='contained'
+              color='secondary'
+              className={classes.multiButton}
+              onClick={this.handleGoBack}
+            >
+              Powrót do tabeli
+            </Button>
+          </div>
+        </>
+      );
+    } else if (userProgress >= 11 && knownChars.length !== 0) {
+      console.log(this.state.knownChars);
+      this.setState({
+        review: true,
+        userProgress: 10
+      });
+      return (
+        <div className='card multi-answer'>
+          {this.checkReviewProgess()}
+          {this.state.showNextButton && (
+            <Button
+              color='secondary'
+              variant='outlined'
+              className={classes.button}
+              onClick={this.handleNext}
+            >
+              Następny znak >
+            </Button>
+          )}
+        </div>
+      );
+    }
     if (
       unseenChars &&
       (userProgress === 0 || userProgress) &&
@@ -259,6 +318,9 @@ class Learn extends Component {
       return (
         <>
           <div className='card one-answer'>
+            <div className='close' onClick={this.handleGoBack}>
+              <i className='material-icons md-36'>clear</i>
+            </div>
             <h1>Nowe znaki na dziś</h1>
             <h2>{unseenChars[userProgress][counter].jp}</h2>
             <Button

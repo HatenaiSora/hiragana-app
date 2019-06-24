@@ -22,7 +22,8 @@ class Review extends Component {
     knownChars: false,
     counter: 0,
     showNextButton: false,
-    correctAnswer: false
+    correctAnswer: false,
+    answers: []
   };
   componentDidMount() {
     console.log(this.state.currentUser.uid);
@@ -60,7 +61,8 @@ class Review extends Component {
     let newCounter = this.state.counter + 1;
     this.setState({
       showNextButton: false,
-      counter: newCounter
+      counter: newCounter,
+      answers: []
     });
   };
   getRandomIndex = (max, character) => {
@@ -74,7 +76,7 @@ class Review extends Component {
           randomAnswer = knownChars[charIndex].pl;
         }
       }
-
+      console.log();
       return randomAnswer;
     }
   };
@@ -109,9 +111,27 @@ class Review extends Component {
     const { classes } = this.props;
     if (this.state.knownChars) {
       if (this.state.counter < this.state.knownChars.length) {
+        let answers;
+        if (
+          this.state.knownChars &&
+          this.state.showNextButton === false &&
+          this.state.answers.length === 0
+        ) {
+          answers = this.generateAnswers(
+            this.state.knownChars.length - 1,
+            this.state.knownChars[this.state.counter]
+          );
+          this.setState({
+            answers: answers
+          });
+        }
+
         return (
           <>
             <div className='card multi-answer'>
+              <div className='close' onClick={this.handleGoBack}>
+                <i className='material-icons md-36'>clear</i>
+              </div>
               <h1>Wybierz poprawną odpowiedź</h1>
               <h2>{this.state.knownChars[this.state.counter].jp}</h2>
               {this.state.showNextButton && (
@@ -124,23 +144,19 @@ class Review extends Component {
                 </span>
               )}
               <div className='answers'>
-                {this.state.knownChars &&
-                  this.generateAnswers(
-                    this.state.knownChars.length - 1,
-                    this.state.knownChars[this.state.counter]
-                  ).map((e, index) => {
-                    return (
-                      <Button
-                        variant='contained'
-                        color='secondary'
-                        className={classes.multiButton}
-                        onClick={this.handleMultiAnswers}
-                        key={index}
-                      >
-                        {e}
-                      </Button>
-                    );
-                  })}
+                {this.state.answers.map((e, index) => {
+                  return (
+                    <Button
+                      variant='contained'
+                      color='secondary'
+                      className={classes.multiButton}
+                      onClick={this.handleMultiAnswers}
+                      key={index}
+                    >
+                      {e}
+                    </Button>
+                  );
+                })}
               </div>
               {this.state.showNextButton && (
                 <Button
