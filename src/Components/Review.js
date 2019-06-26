@@ -82,8 +82,7 @@ class Review extends Component {
   };
 
   generateAnswers = (max, character) => {
-    // max będzie przyjmować userProgress, a character obiekt wyświetlanej hiragany
-    // nie powinny się generować jeszcze raz po kliknęciu w dobrą odpowiedź
+    // max takes userProgress, and character takes the object of hiragana character currently shown
     let answers = [0, 0, 0, 0];
     let randomIndex = Math.floor(Math.random() * answers.length);
     answers.splice(randomIndex, 1, character.pl);
@@ -111,9 +110,8 @@ class Review extends Component {
     const { classes } = this.props;
     if (this.state.knownChars) {
       if (this.state.counter < this.state.knownChars.length) {
-        let answers;
+        let answers = [];
         if (
-          this.state.knownChars &&
           this.state.showNextButton === false &&
           this.state.answers.length === 0
         ) {
@@ -190,7 +188,6 @@ class Review extends Component {
         );
       }
     } else {
-      console.log(this.state.knownChars);
       return <h1>Ładowanie danych...</h1>;
     }
   }

@@ -148,7 +148,7 @@ class Learn extends Component {
   };
 
   generateAnswers = (max, character) => {
-    // max będzie przyjmować userProgress, a character obiekt wyświetlanej hiragany
+    // max takes userProgress, and character takes the object of hiragana character currently shown
     let answers = [0, 0, 0, 0];
 
     let randomIndex = Math.floor(Math.random() * answers.length);
@@ -210,8 +210,7 @@ class Learn extends Component {
       reviewProgress <= userProgress &&
       counter < unseenChars[reviewProgress].length
     ) {
-      // te z tablicy known mogłyby się nie pokazywać
-      let answers;
+      let answers = [];
       if (
         unseenChars &&
         showNextButton === false &&
